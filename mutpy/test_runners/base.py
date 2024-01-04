@@ -81,18 +81,13 @@ class MutationTestResult:
     def is_survived(self):
         return self.was_successful()
 
-    def _get_killer(self):
-        if self.failed:
-            return self.failed[0]
-
     def get_killer(self):
-        killer = self._get_killer()
-        if killer:
-            return killer.name
+        if self.failed:
+            return [killer.name for killer in self.failed]
 
     def get_exception_traceback(self):
-        killer = self._get_killer()
-        if killer:
+        if len(self.failed) > 0:
+            killer = self.failed[0]
             return killer.long_message
 
     def get_exception(self):
