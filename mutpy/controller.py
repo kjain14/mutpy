@@ -49,7 +49,8 @@ class MutationScore:
 class MutationController(views.ViewNotifier):
 
     def __init__(self, runner_cls, target_loader, test_loader, views, mutant_generator,
-                 timeout_factor=5, disable_stdout=False, mutate_covered=False, mutation_number=None):
+                 timeout_factor=5, disable_stdout=False, mutate_covered=False, mutation_number=None,
+                 show_all_killing_tests=False):
         super().__init__(views)
         self.target_loader = target_loader
         self.test_loader = test_loader
@@ -57,7 +58,7 @@ class MutationController(views.ViewNotifier):
         self.timeout_factor = timeout_factor
         self.stdout_manager = utils.StdoutManager(disable_stdout)
         self.mutation_number = mutation_number
-        self.runner = runner_cls(self.test_loader, self.timeout_factor, self.stdout_manager, mutate_covered)
+        self.runner = runner_cls(self.test_loader, self.timeout_factor, self.stdout_manager, mutate_covered, show_all_killing_tests)
 
     def run(self):
         self.notify_initialize(self.target_loader.names, self.test_loader.names)
@@ -74,9 +75,9 @@ class MutationController(views.ViewNotifier):
 
     def run_mutation_process(self):
         try:
-            test_modules, total_duration, number_of_tests = self.load_and_check_tests()
+            test_modules, total_duration, number_of_tests, test_names = self.load_and_check_tests()
 
-            self.notify_passed(test_modules, number_of_tests)
+            self.notify_passed(test_modules, number_of_tests, test_names)
             self.notify_start()
 
             self.score = MutationScore()
@@ -88,6 +89,7 @@ class MutationController(views.ViewNotifier):
 
     def load_and_check_tests(self):
         test_modules = []
+        test_names = []
         number_of_tests = 0
         total_duration = 0
         for test_module, target_test in self.test_loader.load():
@@ -97,9 +99,11 @@ class MutationController(views.ViewNotifier):
             else:
                 raise TestsFailAtOriginal(result)
             number_of_tests += result.tests_run()
+            test_names += [elem.name for elem in result.passed]
+            test_names += [elem.name for elem in result.failed]
             total_duration += duration
 
-        return test_modules, total_duration, number_of_tests
+        return test_modules, total_duration, number_of_tests, test_names
 
     def run_test(self, test_module, target_test):
         return self.runner.run_test(test_module, target_test)

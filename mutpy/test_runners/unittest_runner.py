@@ -5,10 +5,10 @@ from mutpy.test_runners.base import CoverageTestResult, BaseTestSuite, BaseTestR
 
 class UnittestMutationTestResult(unittest.TestResult):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, failfast=True, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.type_error = None
-        self.failfast = False
+        self.failfast = failfast
         self.mutation_test_result = MutationTestResult()
 
     def addSuccess(self, test):
@@ -76,8 +76,9 @@ class UnittestCoverageResult(CoverageTestResult, unittest.TestResult):
 
 class UnittestTestSuite(BaseTestSuite):
 
-    def __init__(self):
+    def __init__(self, show_all_killing_tests=False):
         self.suite = unittest.TestSuite()
+        self.show_all_killing_tests = show_all_killing_tests
 
     def add_tests(self, test_module, target_test):
         self.suite.addTests(self.load_tests(test_module, target_test))
@@ -88,7 +89,7 @@ class UnittestTestSuite(BaseTestSuite):
                 unittest.skip('not covered')(test_method))
 
     def run(self):
-        result = UnittestMutationTestResult()
+        result = UnittestMutationTestResult(not self.show_all_killing_tests)
         self.suite.run(result)
         return result.mutation_test_result
 

@@ -137,15 +137,16 @@ class TestFailure(TestInfo):
 class BaseTestRunner:
     test_suite_cls = None
 
-    def __init__(self, test_loader, timeout_factor, stdout_manager, mutate_covered):
+    def __init__(self, test_loader, timeout_factor, stdout_manager, mutate_covered, show_all_killing_tests):
         self.test_loader = test_loader
         self.timeout_factor = timeout_factor
         self.stdout_manager = stdout_manager
         self.mutate_covered = mutate_covered
+        self.show_all_killing_tests = show_all_killing_tests
         self.init_modules = self.find_init_modules()
 
     def create_empty_test_suite(self):
-        return self.test_suite_cls()
+        return self.test_suite_cls(show_all_killing_tests=self.show_all_killing_tests)
 
     def create_test_suite(self, mutant_module):
         if not issubclass(self.test_suite_cls, BaseTestSuite):

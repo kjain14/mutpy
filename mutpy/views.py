@@ -108,8 +108,9 @@ class TextView(QuietTextView):
                     100 * score.covered_nodes / score.all_nodes
                 ))
 
-    def passed(self, tests, number_of_tests):
+    def passed(self, tests, number_of_tests, test_names):
         self.level_print('{} tests passed:'.format(number_of_tests))
+        self.level_print('Tests: {}'.format(str(test_names)))
 
         for test, target, time in tests:
             test_name = test.__name__ + ('.' + target if target else '')
@@ -192,9 +193,10 @@ class AccReportView:
     def initialize(self, target, tests):
         self.target = target
 
-    def passed(self, tests, number_of_tests):
+    def passed(self, tests, number_of_tests, test_names):
         self.tests = tests
         self.number_of_tests = number_of_tests
+        self.test_names = test_names
 
     def mutation(self, number, mutations, module, mutant):
         mutations = [{'operator': mutation.operator.name(), 'lineno': mutation.node.lineno} for mutation in mutations]

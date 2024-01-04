@@ -31,6 +31,8 @@ def build_parser():
     parser.add_argument('--disable-stdout', '-d', action='store_true',
                         help='try disable stdout during mutation '
                              '(this option can damage your tests if you interact with sys.stdout)')
+    parser.add_argument('--show-all-killing-tests', action='store_true',
+                        help='show all killing tests rather than only the first killing test')
     parser.add_argument('--experimental-operators', '-e', action='store_true', help='use experimental operators')
     parser.add_argument('--operator', '-o', type=str, nargs='+',
                         help='use only selected operators', metavar='OPERATOR')
@@ -80,6 +82,7 @@ def build_controller(cfg):
         disable_stdout=cfg.disable_stdout,
         mutate_covered=cfg.coverage,
         mutation_number=cfg.mutation_number,
+        show_all_killing_tests=cfg.show_all_killing_tests,
     )
 
 

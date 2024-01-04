@@ -63,9 +63,10 @@ class PytestMutpyTestDiscoveryPlugin:
 
 
 class PytestTestSuite(BaseTestSuite):
-    def __init__(self):
+    def __init__(self, show_all_killing_tests=False):
         self.tests = set()
         self.skipped_tests = set()
+        self.show_all_killing_tests = show_all_killing_tests
 
     def add_tests(self, test_module, target_test):
         if target_test:
@@ -80,7 +81,8 @@ class PytestTestSuite(BaseTestSuite):
 
     def run(self):
         mutpy_plugin = PytestMutpyPlugin(skipped_tests=self.skipped_tests)
-        pytest.main(args=list(self.tests) + ['-p', 'no:terminal'], plugins=list(default_plugins) + [mutpy_plugin])
+        fast_stop = [] if self.show_all_killing_tests else ['-x']
+        pytest.main(args=list(self.tests) + fast_stop + ['-p', 'no:terminal'], plugins=list(default_plugins) + [mutpy_plugin])
         return mutpy_plugin.mutation_test_result
 
     def run_with_coverage(self, coverage_injector=None):
