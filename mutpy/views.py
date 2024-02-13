@@ -62,10 +62,7 @@ class QuietTextView:
             print('{} {}'.format(prefix, msg), end=end)
 
     def decorate(self, text, color=None, on_color=None, attrs=None):
-        if self.colored_output:
-            return termcolor.colored(text, color, on_color, attrs)
-        else:
-            return text
+        return text
 
     @staticmethod
     def time_format(time=None):
