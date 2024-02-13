@@ -8,7 +8,7 @@ from difflib import unified_diff
 import jinja2
 import yaml
 
-from mutpy import codegen, termcolor, utils
+from mutpy import codegen, utils
 
 
 class ViewNotifier:
